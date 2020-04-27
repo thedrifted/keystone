@@ -17,9 +17,6 @@ const {
 
 const { BaseKeystoneAdapter, BaseListAdapter, BaseFieldAdapter } = require('@keystonejs/keystone');
 const { queryParser, pipelineBuilder } = require('@keystonejs/mongo-join-builder');
-const logger = require('@keystonejs/logger').logger('mongoose');
-
-const slugify = require('@sindresorhus/slugify');
 
 const debugMongoose = () => !!process.env.DEBUG_MONGOOSE;
 
@@ -36,27 +33,11 @@ class MongooseAdapter extends BaseKeystoneAdapter {
     this._manyModels = {};
   }
 
-  async _connect({ name }) {
-    const { mongoUri, ...mongooseConfig } = this.config;
+  async _connect() {
+    const { url, ...mongooseConfig } = this.config;
     // Default to the localhost instance
-    let uri =
-      mongoUri ||
-      process.env.CONNECT_TO ||
-      process.env.DATABASE_URL ||
-      process.env.MONGO_URI ||
-      process.env.MONGODB_URI ||
-      process.env.MONGO_URL ||
-      process.env.MONGODB_URL ||
-      process.env.MONGOLAB_URI ||
-      process.env.MONGOLAB_URL;
 
-    if (!uri) {
-      const defaultDbName = slugify(name) || 'keystone';
-      uri = `mongodb://localhost/${defaultDbName}`;
-      logger.warn(`No MongoDB connection URI specified. Defaulting to '${uri}'`);
-    }
-
-    await this.mongoose.connect(uri, {
+    await this.mongoose.connect(this.url, {
       useNewUrlParser: true,
       useFindAndModify: false,
       useUnifiedTopology: true,

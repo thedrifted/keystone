@@ -467,13 +467,16 @@ module.exports = class Keystone {
   /**
    * @return Promise<null>
    */
-  async connect() {
-    const { adapters, name } = this;
+  connect() {
+    const { adapters } = this;
     const rels = this._consolidateRelationships();
-    await resolveAllKeys(mapKeys(adapters, adapter => adapter.connect({ name, rels })));
-    if (this.eventHandlers.onConnect) {
-      return this.eventHandlers.onConnect(this);
-    }
+    return resolveAllKeys(mapKeys(adapters, adapter => adapter.connect({ rels }))).then(
+      () => {
+        if (this.eventHandlers.onConnect) {
+          return this.eventHandlers.onConnect(this);
+        }
+      }
+    );
   }
 
   /**

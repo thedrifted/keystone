@@ -3,7 +3,6 @@ const { versionGreaterOrEqualTo } = require('@keystonejs/utils');
 const knex = require('knex');
 const pSettle = require('p-settle');
 const { BaseKeystoneAdapter, BaseListAdapter, BaseFieldAdapter } = require('@keystonejs/keystone');
-const logger = require('@keystonejs/logger').logger('knex');
 
 const {
   escapeRegExp,
@@ -13,7 +12,6 @@ const {
   resolveAllKeys,
   identity,
 } = require('@keystonejs/utils');
-const slugify = require('@sindresorhus/slugify');
 
 class KnexAdapter extends BaseKeystoneAdapter {
   constructor({ knexOptions = {}, schemaName = 'public' } = {}) {
@@ -26,20 +24,12 @@ class KnexAdapter extends BaseKeystoneAdapter {
     this.rels = undefined;
   }
 
-  async _connect({ name }) {
+  async _connect() {
     const { knexOptions = {} } = this.config;
-    const { connection } = knexOptions;
-    let knexConnection =
-      connection || process.env.CONNECT_TO || process.env.DATABASE_URL || process.env.KNEX_URI;
 
-    if (!knexConnection) {
-      const defaultDbName = slugify(name, { separator: '_' }) || 'keystone';
-      knexConnection = `postgres://localhost/${defaultDbName}`;
-      logger.warn(`No Knex connection URI specified. Defaulting to '${knexConnection}'`);
-    }
     this.knex = knex({
       client: this.client,
-      connection: knexConnection,
+      connection: this.url,
       ...knexOptions,
     });
 
@@ -49,19 +39,8 @@ class KnexAdapter extends BaseKeystoneAdapter {
       error: result.error || result,
     }));
     if (result.error) {
-      const connectionError = result.error;
-      let dbName;
-      if (typeof knexConnection === 'string') {
-        dbName = knexConnection.split('/').pop();
-      } else {
-        dbName = knexConnection.database;
-      }
-      console.error(`Could not connect to database: '${dbName}'`);
-      console.warn(
-        `If this is the first time you've run Keystone, you can create your database with the following command:`
-      );
-      console.warn(`createdb ${dbName}`);
-      throw connectionError;
+      console.error(`Could not connect to database: '${this.url}'`);
+      throw result.error;
     }
 
     return result;
