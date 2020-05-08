@@ -6,19 +6,26 @@ import { FieldContainer, FieldLabel, FieldDescription, FieldInput } from '@arch-
 import { TextDayPicker } from '@arch-ui/day-picker';
 import { Alert } from '@arch-ui/alert';
 
-const CalendarDayField = ({ autoFocus, field, value, errors, onChange, isDisabled }) => {
-  const htmlID = `ks-daypicker-${field.path}`;
+const CalendarDayField = ({
+  autoFocus,
+  field: { format, path, label, isRequired, adminDoc },
+  value,
+  errors,
+  onChange,
+  isDisabled,
+}) => {
+  const htmlID = `ks-daypicker-${path}`;
 
   return (
     <FieldContainer>
-      <FieldLabel htmlFor={htmlID} field={field} errors={errors} />
-      <FieldDescription text={field.adminDoc} />
+      <FieldLabel htmlFor={htmlID} field={{ label, isRequired }} errors={errors} />
+      <FieldDescription text={adminDoc} />
       <FieldInput>
         <TextDayPicker
           id={htmlID}
           autoFocus={autoFocus}
           date={value}
-          format={field.config.format}
+          format={format}
           onChange={onChange}
           disabled={isDisabled}
         />

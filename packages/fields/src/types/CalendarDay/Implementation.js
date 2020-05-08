@@ -3,11 +3,13 @@ import { Implementation } from '../../Implementation';
 import { MongooseFieldAdapter } from '@keystonejs/adapter-mongoose';
 import { KnexFieldAdapter } from '@keystonejs/adapter-knex';
 
+const ISO8601 = 'yyyy-MM-dd';
+
 export class CalendarDay extends Implementation {
   constructor(
     path,
     {
-      format = 'yyyy-MM-dd',
+      format = ISO8601,
       yearRangeFrom = new Date().getFullYear() - 100,
       yearRangeTo = new Date().getFullYear(),
     }
@@ -22,7 +24,9 @@ export class CalendarDay extends Implementation {
   gqlOutputFields() {
     return [`${this.path}: String`];
   }
-
+  gqlOutputFieldResolvers() {
+    return { [`${this.path}`]: item => item[this.path] };
+  }
   gqlQueryInputFields() {
     return [
       ...this.equalityInputFields('String'),
