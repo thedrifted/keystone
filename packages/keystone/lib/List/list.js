@@ -638,6 +638,30 @@ module.exports = class List {
     );
   }
 
+  gqlQueryResolvers({ schemaName }) {
+    const schemaAccess = this.access[schemaName];
+    let resolvers = {};
+
+    // If set to false, we can confidently remove these resolvers entirely from
+    // the graphql schema
+    if (schemaAccess.read) {
+      resolvers = {
+        [this.gqlNames.listQueryName]: (_, args, context, info) =>
+          this.listQuery(args, context, this.gqlNames.listQueryName, info),
+
+        [this.gqlNames.listQueryMetaName]: (_, args, context, info) =>
+          this.listQueryMeta(args, context, this.gqlNames.listQueryMetaName, info),
+
+        [this.gqlNames.listMetaName]: (_, args, context) => this.listMeta(context),
+
+        [this.gqlNames.itemQueryName]: (_, args, context, info) =>
+          this.itemQuery(args, context, this.gqlNames.itemQueryName, info),
+      };
+    }
+
+    return resolvers;
+  }
+
   async listQuery(args, context, gqlName, info, from) {
     const access = await this.checkListAccess(context, undefined, 'read', { gqlName });
 
@@ -951,5 +975,6 @@ module.exports = class List {
       };
     });
   }
+
 
 };
