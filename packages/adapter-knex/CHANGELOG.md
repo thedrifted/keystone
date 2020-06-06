@@ -1,5 +1,16 @@
 # @keystonejs/adapter-knex
 
+## 10.1.0
+
+### Minor Changes
+
+- [`7c38e2671`](https://github.com/keystonejs/keystone/commit/7c38e267143491f38699326f02764f40f337d416) [#3085](https://github.com/keystonejs/keystone/pull/3085) Thanks [@MadeByMike](https://github.com/MadeByMike)! - Added a new \_verifyTables method to the knex adapter. This is then used by the Keystone CLI to warn when tables have not been initialised or the database might need a migration.
+
+### Patch Changes
+
+- Updated dependencies [[`8df24d2ab`](https://github.com/keystonejs/keystone/commit/8df24d2ab4bed8a7fc1a856c20a571781dd7c04e), [`33046a66f`](https://github.com/keystonejs/keystone/commit/33046a66f33a82cf099880303b44d9736344667d), [`7c38e2671`](https://github.com/keystonejs/keystone/commit/7c38e267143491f38699326f02764f40f337d416)]:
+  - @keystonejs/keystone@11.0.0
+
 ## 10.0.2
 
 ### Patch Changes
